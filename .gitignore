@@ -1,1 +1,5 @@
 *.vscode
+config
+database
+files
+__pycache__
