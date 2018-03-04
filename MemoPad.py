@@ -138,20 +138,47 @@ class MemoPad(tk.Frame):
     # メニューバー生成
     # ---------------------------------------------------------------------------
     def menu_create(self):
-        # メニューボタン
-        def button_action(event):
+        
+        # 画面遷移
+        def move(mv):
             # 一覧表示
-            if event.widget['text'] == MENU_ITEM[0]:
+            if mv.widget['text'] == MENU_ITEM[0]:
                 self.home()
             # カテゴリ別表示
-            elif event.widget['text'] == MENU_ITEM[1]:
+            elif mv.widget['text'] == MENU_ITEM[1]:
                 self.insert_memo()
             # カテゴリ編集
-            elif event.widget['text'] == MENU_ITEM[2]:
+            elif mv.widget['text'] == MENU_ITEM[2]:
                 self.category_edit()
             # アプリ設定
-            elif event.widget['text'] == MENU_ITEM[3]:
+            elif mv.widget['text'] == MENU_ITEM[3]:
                 self.app_config()
+
+        # メニューボタン
+        def button_action(event):
+            # はい(機能移動)
+            def submit_yes(event):
+                sub_win.destroy()
+                move(mv)
+            # いいえ(中断)
+            def submit_no(event):
+                sub_win.destroy()
+                return
+            
+            mv = event
+            if self.edit_flag == True:
+                # サブウィンドウ
+                sub_win = sw.SubWindow('移動確認', '編集中です。他の画面に移動しますか？', self.font)
+                # はいボタン
+                yes_button = tk.Button(sub_win.frame, text='はい', width=8, font=(self.font, F_SIZE['S']))
+                yes_button.bind('<1>', submit_yes)
+                yes_button.pack(side=tk.LEFT, padx=5, pady=5)
+                # いいえボタン
+                no_button = tk.Button(sub_win.frame, text='いいえ', width=8, font=(self.font, F_SIZE['S']))
+                no_button.bind('<1>', submit_no)
+                no_button.pack(side=tk.LEFT, padx=5, pady=5)
+            else:
+                move(mv)
         
         # 既に存在している場合はメニューを破棄して再生成
         try:
@@ -171,6 +198,7 @@ class MemoPad(tk.Frame):
     # メインフレーム生成
     # ---------------------------------------------------------------------------
     def main_create(self, w, h):
+        
         # 既に存在している場合はメインフレームを破棄して再生成
         try:
             self.main_frame.destroy()
@@ -187,6 +215,7 @@ class MemoPad(tk.Frame):
     # ホーム画面 
     # ---------------------------------------------------------------------------
     def home(self):
+        
         # ファイル出力
         def submit_output(event):
             # ok
@@ -264,6 +293,9 @@ class MemoPad(tk.Frame):
                 ok_button.bind('<1>', submit_ok)
                 ok_button.pack(side=tk.LEFT, padx=5, pady=5)
         
+        # 編集中フラグ設定
+        self.edit_flag = False
+
         # 機能ラベル
         self.main_create(MAIN_WIDTH, ROOT_HEIGHT)
         self.label_menuname = tk.Label(self.main_frame, text=MENU_ITEM[0], width=15, font=(self.font, F_SIZE['L']))
@@ -318,10 +350,13 @@ class MemoPad(tk.Frame):
     # 登録画面
     # ---------------------------------------------------------------------------
     def insert_memo(self):
+        
         # 登録してサブウィンドウを表示
         def submit_create(event):
             def submit_ok(event):
                 sub_win.destroy()
+                self.home()
+            
             title = str(self.memo_title.get())
             # タイトルが1文字以上20文字以下の場合のみ登録処理
             if len(title) < 1 :
@@ -338,6 +373,9 @@ class MemoPad(tk.Frame):
             ok_button.bind('<1>', submit_ok)
             ok_button.pack(side=tk.LEFT, padx=5, pady=5)
         
+        # 編集中フラグ設定
+        self.edit_flag = True
+
         # 機能ラベル
         self.main_create(MAIN_WIDTH, ROOT_HEIGHT)
         self.label_menuname = tk.Label(self.main_frame, text=MENU_ITEM[1], width=15, font=(self.font, F_SIZE['L']))
@@ -353,10 +391,13 @@ class MemoPad(tk.Frame):
     # 編集画面 
     # ---------------------------------------------------------------------------
     def update_memo(self, memo):
+        
         # 登録してサブウィンドウを表示
         def submit_update(event):
             def submit_ok(event):
                 sub_win.destroy()
+                self.home()
+        
             title = str(self.memo_title.get())
             # タイトルが1文字以上20文字以下の場合のみ登録処理
             if len(title) < 1 :
@@ -372,6 +413,9 @@ class MemoPad(tk.Frame):
             ok_button.bind('<1>', submit_ok)
             ok_button.pack(side=tk.LEFT, padx=5, pady=5)
         
+        # 編集中フラグ設定
+        self.edit_flag = True
+
         # 機能ラベル
         self.main_create(MAIN_WIDTH, ROOT_HEIGHT)
         self.label_menuname = tk.Label(self.main_frame, text='メモ編集', width=15, font=(self.font, F_SIZE['L']))
@@ -389,6 +433,7 @@ class MemoPad(tk.Frame):
     # メモ枠組 
     # ---------------------------------------------------------------------------
     def make_memo_frame(self):
+        
         # タイトル
         self.title_frame = tk.Frame(self.main_frame)
         self.title_frame.pack(padx=45, pady=15, fill=tk.BOTH)
@@ -424,10 +469,12 @@ class MemoPad(tk.Frame):
     # カテゴリ編集 
     # ---------------------------------------------------------------------------
     def category_edit(self):
+        
         # カテゴリ登録
         def submit_insert(event):
             def submit_ok(event):
                 sub_win.destroy()
+            
             c_name = str(self.entry_insert.get())
             
             # タイトルが1文字以上20文字以下の場合のみ登録処理
@@ -478,6 +525,9 @@ class MemoPad(tk.Frame):
             no_button.bind('<1>', submit_no)
             no_button.pack(side=tk.LEFT, padx=5, pady=5)    
         
+        # 編集中フラグ設定
+        self.edit_flag = False
+
         # 機能ラベル
         self.main_create(MAIN_WIDTH, ROOT_HEIGHT)
         self.label_menuname = tk.Label(self.main_frame, text=MENU_ITEM[2], width=15, font=(self.font, F_SIZE['L']))
@@ -514,6 +564,7 @@ class MemoPad(tk.Frame):
     # アプリ設定
     # ---------------------------------------------------------------------------
     def app_config(self):
+        
         # コンフィグ変更の確認
         def submit_config(event):
             # はい
@@ -539,6 +590,9 @@ class MemoPad(tk.Frame):
             no_button.bind('<1>', submit_no)
             no_button.pack(side=tk.LEFT, padx=5, pady=5)
         
+        # 編集中フラグ設定
+        self.edit_flag = False
+
         # 機能ラベル
         self.main_create(MAIN_WIDTH, ROOT_HEIGHT)
         self.label_menuname = tk.Label(self.main_frame, text=MENU_ITEM[3], width=15, font=(self.font, F_SIZE['L']))
@@ -575,6 +629,9 @@ class MemoPad(tk.Frame):
         self.submit_config.bind('<1>', submit_config)
         self.submit_config.pack(padx=5, pady=5)
 
+# ---------------------------------------------------------------------------
+# メイン処理
+# ---------------------------------------------------------------------------
 if __name__ == '__main__':
     root = tk.Tk()
     root.title(TITLE)
