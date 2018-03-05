@@ -25,7 +25,9 @@ class SubWindow(tk.Toplevel):
         sy = int(self.winfo_screenheight()/2)
         self.resizable(0, 0)
         self.geometry("%sx%s+%s+%s" % (SUB_WIDTH, SUB_HEIGHT, int(sx - SUB_WIDTH/2), int(sy - SUB_HEIGHT/2)))
-        
+            
+        self.transient(master)
+        self.grab_set()
         # メッセージ＆フレーム生成
         self.label_message = tk.Label(self, text=mess, font=(font, 10))
         self.label_message.pack(padx=5, pady=15)
